@@ -1,0 +1,5 @@
+import(graphics)
+export(nodeHarvest)
+S3method(predict,nodeHarvest)
+S3method(plot,nodeHarvest)
+S3method(print,nodeHarvest)
