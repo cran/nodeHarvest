@@ -2,10 +2,11 @@
 \Rdversion{1.1}
 \alias{plot.nodeHarvest}
 \title{
-Node Harvest visualization
+plot method for Node Harvest objects
 }
 \description{
-Visualize the node harvest estimator
+Node Harvest visualization. Each node with a non-zero weight is plotted (weights is proportional to area of node).
+The average response in each node is shown on the horizontal axis and the sample size in each node on the vertical axis.
 }
 \usage{
 \method{plot}{nodeHarvest}(x,  XTEST = NULL, 

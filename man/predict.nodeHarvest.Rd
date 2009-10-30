@@ -3,7 +3,7 @@
 \alias{predict.nodeHarvest}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Node Harvest prediction for new observations
+predict method for Node Harvest objects
 }
 \description{
 Given new observations, compute the prediction of a node harvest estimator.

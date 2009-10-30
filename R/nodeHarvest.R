@@ -1,5 +1,5 @@
 nodeHarvest <-
-function(X,Y, nodesize=10, nodes=1000, maxinter=1, lambda=Inf, addto=NULL,  onlyinter=NULL, silent=FALSE){
+function(X,Y, nodesize=10, nodes=1000, maxinter=1, mode="mean", lambda=Inf, addto=NULL,  onlyinter=NULL, silent=FALSE){
 
   if(is.data.frame(X)){
     colX <- colnames(X)
@@ -17,7 +17,7 @@ function(X,Y, nodesize=10, nodes=1000, maxinter=1, lambda=Inf, addto=NULL,  only
   imputed <- FALSE
   if(any(is.na(X))){
     
-    if(!silent) cat("\n"," imputing missing values for node generation ...","\n")
+    if(!silent) cat("\n"," imputing missing values for node generation ...")
     tmp <- capture.output( X <- rfImpute(X,if( length(unique(Y))<= 5 ) as.factor(Y) else Y,iter=3)[,-1])
   }
   if(!silent) cat("\n ... generating",nodes,"nodes ...")
@@ -26,7 +26,7 @@ function(X,Y, nodesize=10, nodes=1000, maxinter=1, lambda=Inf, addto=NULL,  only
   conn <- attr(Z,"connection")
 
   if(!silent) cat(" ... computing node means ...","\n")
-  geti <- getI(Z,X,Y,mode="mean")
+  geti <- getI(Z,X,Y,mode=mode)
   I <- geti$I
   Z <- geti$Z
   
@@ -37,7 +37,7 @@ function(X,Y, nodesize=10, nodes=1000, maxinter=1, lambda=Inf, addto=NULL,  only
   if(!silent) cat(" ... computing node weights ...")
   w <- getw(I,Y,Isign=abs(sign(I)),wleafs=wleafs, epsilon=lambda-1,silent=silent)
     
-  rem <- which(abs(w)< 10^(-3))
+  rem <- which(abs(w) < 10^(-3))
   if(length(rem)>0){
     Z <- Z[-rem]
     w <- w[-rem]

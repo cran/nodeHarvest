@@ -3,7 +3,9 @@ function(X,Y, nodes=1000, addZ=NULL, nodesize=5, maxinter=2, onlyinter=NULL, sil
   
   n <- nrow(X)
   ZRULES <- if(!is.null(addZ)) addZ[["nodes"]] else list()
-  while(length(ZRULES) < nodes){
+  maxloop <- max(100, round(nodes/10)*2 )
+  loopc <- 0
+  while(length(ZRULES) < nodes & (loopc <- (loopc + 1))<maxloop){
     rf <- randomForest( X, Y + 0.0001*sd(Y)*rnorm(length(Y)), ntree=10, nodesize=nodesize, keep.forest=TRUE, keep.inbag=FALSE, subsample= min(100, round(nrow(X)/2) ), replace=FALSE)
     
     treelist <- list()
@@ -51,8 +53,8 @@ function(X,Y, nodes=1000, addZ=NULL, nodesize=5, maxinter=2, onlyinter=NULL, sil
       }
     }
   }
-  
-  
+  if(length(ZRULES)<0.95* nodes) warning(paste("Could not generate desired ",nodes,"nodes in reasonable time. Working  with",length(ZRULES)," instead"))
+
   
   if(!any(sapply(ZRULES,attr,"depth")==0)){
     rootnode <- matrix(c(1,-Inf,Inf),nrow=1)

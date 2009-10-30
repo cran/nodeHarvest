@@ -9,6 +9,7 @@ Computes the node harvest estimator
 nodeHarvest(X, Y, nodesize = 10, 
 	       	  nodes = 1000, 
 		  maxinter = 1, 
+		  mode  =  "mean",
 		  lambda = Inf, 
 		  addto = NULL, 
 		  onlyinter = NULL,
@@ -34,6 +35,9 @@ nodeHarvest(X, Y, nodesize = 10,
   \item{maxinter}{
   Maximal interaction depth 
   (0 = only main effects; 1 = first order interactions etc).
+}
+  \item{mode}{
+  If mode is equal to \code{"mean"}, predictions are weighted group means. If equal to \code{"outbag"} (experimental version), the diagonal elements of the smoothing matrix are set to 0.  
 }
   \item{lambda}{
   Optional upper bound on the inverse of the average weighted fraction of samples within each node.
