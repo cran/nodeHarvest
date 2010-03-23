@@ -8,16 +8,16 @@ Computes the node harvest estimator
 \usage{
 nodeHarvest(X, Y, nodesize = 10, 
 	       	  nodes = 1000, 
-		  maxinter = 1, 
-		  mode  =  "mean",
+		  maxinter = 2, 
+		  mode = "mean", 
 		  lambda = Inf, 
 		  addto = NULL, 
-		  onlyinter = NULL,
-                  silent = FALSE)
+		  onlyinter = NULL, 
+		  silent = FALSE, 
+		  biascorr = FALSE)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{X}{
+ \item{X}{
   A n x p - dimensional data matrix, where n is sample size and p is the dimensionality of the predictor variable.
   Factorial variables are currently converted to numerical variables (will be changed in the future).
   Missing values are supported. 
@@ -34,7 +34,7 @@ nodeHarvest(X, Y, nodesize = 10,
 }
   \item{maxinter}{
   Maximal interaction depth 
-  (0 = only main effects; 1 = first order interactions etc).
+  (1 = only main effects; 2 = two-factor interactions etc).
 }
   \item{mode}{
   If mode is equal to \code{"mean"}, predictions are weighted group means. If equal to \code{"outbag"} (experimental version), the diagonal elements of the smoothing matrix are set to 0.  
@@ -50,7 +50,10 @@ nodeHarvest(X, Y, nodesize = 10,
   Allow interactions only for this list of variables.
 }
 \item{silent}{
-If \code{TRUE}, no comments are printed.
+  If \code{TRUE}, no comments are printed.
+}
+  \item{biascorr}{
+  Use bias correction? Experimental. Can be useful for high signal-to-noise ratio data. 
 }
 }
 \details{
@@ -58,8 +61,7 @@ If \code{TRUE}, no comments are printed.
   If these resources are limited, an estimator can be build by iteratively calling the function, adding the previous 
   estimator via the \code{addto} argument.
 
-  Feedback and feature requests are more than welcome (email below).
-}
+  Feedback and feature requests are more than welcome (email below).}
 \value{
 A list with entries
   \item{nodes      }{A list of all selected nodes}
@@ -68,26 +70,24 @@ A list with entries
   \item{varnames   }{Variable names} 
   \item{Y          }{The original observations} 
 }
-\references{
-`Node harvest: simple and interpretable regression and classification' (arxiv:0910.2145v1)
 
- \url{http://arxiv.org/abs/0910.2145}
+\references{
+  Node harvest: simple and interpretable regression and classification' (arxiv:0910.2145)
+
+  \url{http://arxiv.org/abs/0910.2145}
 }
 \author{
-Nicolai Meinshausen 
-\email{meinshausen@stats.ox.ac.uk} 
+  Nicolai Meinshausen 
+  \email{meinshausen@stats.ox.ac.uk} 
 
-\url{http://www.stats.ox.ac.uk/~meinshau}}
-
+  \url{http://www.stats.ox.ac.uk/~meinshau}}
 
 \seealso{
-\code{\link{predict.nodeHarvest}}, 
-\code{\link{plot.nodeHarvest}}
-}
+  \code{\link{predict.nodeHarvest}}, 
+  \code{\link{plot.nodeHarvest}}}
 \examples{
 
 ## Load Boston Housing dataset
-    library(mlbench)
     data(BostonHousing)
     X <- BostonHousing[,1:13]
     Y <- BostonHousing[,14]
@@ -101,10 +101,11 @@ Nicolai Meinshausen
 ## Train Node Harvest and plot and print the estimator
     NH <- nodeHarvest( X[training,], Y[training], nodes=500 )
     plot(NH)
-    print(NH, nonodes=5)	
+    print(NH, nonodes=6)	
     
 ## Predict on test data and explain prediction of the first sample in the test set
     predicttest <- predict(NH, X[testing,], explain=1)
     plot( predicttest, Y[testing] )
 
 }
+

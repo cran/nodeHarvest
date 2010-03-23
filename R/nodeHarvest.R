@@ -1,32 +1,36 @@
 nodeHarvest <-
-function(X,Y, nodesize=10, nodes=1000, maxinter=1, mode="mean", lambda=Inf, addto=NULL,  onlyinter=NULL, silent=FALSE){
+function(X,Y, nodesize=10, nodes=1000, maxinter=2, mode="mean", lambda=Inf, addto=NULL,  onlyinter=NULL, silent=FALSE,biascorr=FALSE){
 
-  if(is.data.frame(X)){
-    colX <- colnames(X)
-    for (k in 1:ncol(X)){
-      if(class(X[,k])!="numeric"){
-        if(!silent) cat("\n", paste("converting ",class(X[,k]), " variable `",colnames(X)[k],"' to numeric vector in current version ..."),sep="")
-        X[,k] <- as.numeric(X[,k])
-      }
+  levelvec <- list()
+  for (k in 1:ncol(X)){
+    if(!class(X[,k])%in%c("numeric","factor")){
+      if(!silent) cat("\n", paste("converting ",class(X[,k]), " variable `",colnames(X)[k],"' to numeric vector in current version ..."),sep="")
+      X[,k] <- as.numeric(X[,k])
     }
-    X <- as.matrix(X)
-    colnames(X) <- colX
+    if(class(X[,k])=="factor"){
+      levelvec[[k]] <- levels(X[,k])
+    }else{
+      levelvec[[k]] <- numeric(0)
+    }
   }
-
   
+
+
+  hasnas <- any(is.na(X))
   imputed <- FALSE
-  if(any(is.na(X))){
-    
+  if(hasnas){  
     if(!silent) cat("\n"," imputing missing values for node generation ...")
-    tmp <- capture.output( X <- rfImpute(X,if( length(unique(Y))<= 5 ) as.factor(Y) else Y,iter=3)[,-1])
+    tmp <- capture.output( XIMP <- rfImpute(X,if( length(unique(Y))<= 5 ) as.factor(Y) else Y,iter=3)[,-1])
   }
-  if(!silent) cat("\n ... generating",nodes,"nodes ...")
-  Z <- makeRules( X ,Y,nodes=nodes,addZ= addto ,nodesize=nodesize, maxinter=maxinter+1, onlyinter=onlyinter, silent=silent)
   
-  conn <- attr(Z,"connection")
-
+  if(!silent) cat("\n ... generating",nodes,"nodes ...")
+  Z <- makeRules( if(hasnas) XIMP else X ,Y,nodes=nodes,addZ= addto ,nodesize=nodesize, maxinter=maxinter, onlyinter=onlyinter, silent=silent,levelvec=levelvec)
+  tmp <- list(nodes=Z)
+  attr(tmp,"levelvec") <- levelvec
+  if(hasnas) Z <- adjustmeans(tmp,X,Y)$nodes 
+                              
   if(!silent) cat(" ... computing node means ...","\n")
-  geti <- getI(Z,X,Y,mode=mode)
+  geti <- getI(Z, if(hasnas) XIMP else X ,Y,mode=mode)
   I <- geti$I
   Z <- geti$Z
   
@@ -37,22 +41,44 @@ function(X,Y, nodesize=10, nodes=1000, maxinter=1, mode="mean", lambda=Inf, addt
   if(!silent) cat(" ... computing node weights ...")
   w <- getw(I,Y,Isign=abs(sign(I)),wleafs=wleafs, epsilon=lambda-1,silent=silent)
     
-  rem <- which(abs(w) < 10^(-3))
+  rem <- which(abs(w) < 0.01*max(abs(w)))
   if(length(rem)>0){
+    attri <- attributes(Z)
     Z <- Z[-rem]
+    attributes(Z) <- attri
     w <- w[-rem]
-    conn <- conn[-rem,-rem,drop=FALSE]
+    I <- I[,-rem,drop=FALSE]
   }
   for (k in 1:length(Z)) attr(Z[[k]],"weight") <- w[k]
+
+  Isign <- abs(sign(I))
+  connection <- t(Isign)%*%Isign
+  connection <- diag(1/diag(connection)) %*% connection
+  diag(connection) <- 0
+  connection[lower.tri(connection)] <- 0
+  for (k in 1:nrow(connection)){
+    propcontained <- connection[k,]
+    maxval <- max(propcontained)
+    choose <- which( propcontained>=0.99999 )
+    attr(Z[[k]],"ancestors") <- choose
+  }
+  predicted <- as.numeric(I %*% w)
   
+     
   nh <- list()
-  nh[["connection"]] <- conn
   nh[["varnames"]] <- colnames(X)
-  nh[["predicted"]] <- as.numeric(I[,-rem,drop=FALSE] %*% w)
   nh[["nodes"]] <- Z
   nh[["Y"]] <- Y
   class(nh) <- "nodeHarvest"
-  
+  if(biascorr){
+    corrlin <- lm( Y ~ predicted)
+    nh[["predicted"]] <- corrlin$fitted
+    nh[["bias"]] <- coef(corrlin)
+    if(!silent) cat("  ... applying bias correction (experimental) with coefficients ", coef(corrlin))
+  }else{
+    nh[["predicted"]] <- predicted
+    nh[["bias"]] <- NULL
+  }
   return(nh)
    
  }

@@ -1,11 +1,11 @@
 Package: nodeHarvest
 Type: Package
 Title: Node Harvest for regression and classification
-Version: 0.2
-Date: 2009-10-30
+Version: 0.5
+Date: 2010-03-23
 Author: Nicolai Meinshausen
 Maintainer: Nicolai Meinshausen <meinshausen@stats.ox.ac.uk>
-Depends: quadprog,randomForest,mlbench
+Depends: quadprog,randomForest
 Imports: graphics, utils, stats
 Description: Node harvest is a simple interpretable tree-like estimator
         for high-dimensional regression and classification. A few nodes
@@ -19,6 +19,6 @@ Description: Node harvest is a simple interpretable tree-like estimator
         explanation of the prediction.
 License: GPL-3
 URL: http://www.stats.ox.ac.uk/~meinshau
-Packaged: 2009-10-30 18:53:13 UTC; meinsn
+Packaged: 2010-03-24 15:21:37 UTC; meinsn
 Repository: CRAN
-Date/Publication: 2009-11-01 16:17:23
+Date/Publication: 2010-03-25 07:01:45

@@ -9,7 +9,7 @@ predict method for Node Harvest objects
 Given new observations, compute the prediction of a node harvest estimator.
 }
 \usage{
-\method{predict}{nodeHarvest}(object, newdata = NULL, explain = 1, 
+\method{predict}{nodeHarvest}(object, newdata = NULL, explain = NULL, 
                 maxshow = 5, 
                 weight = sapply(object[["nodes"]], attr, "weight"), ...)
 }

@@ -4,7 +4,7 @@ function(Z,X,Y=NULL,mode="mean"){
   if(!is.null(Y)){
     if(mode=="outbag"){
       for (ll in 1:length(Z)){
-        ind <- getsamples(Z[[ll]],X)
+        ind <- getsamples(Z[[ll]],X,levelvec=attr(Z,"levelvec"))
         
         if(length(ind)>1){
           I[ind,ll] <- (sum(Y[ind])-Y[ind])/(length(ind)-1)
@@ -16,14 +16,16 @@ function(Z,X,Y=NULL,mode="mean"){
       } 
     }else{
       for (ll in 1:length(Z)){
-        ind <- getsamples(Z[[ll]],X)
-        I[ind,ll ] <- attr(Z[[ll]],"predict") <- mean(Y[ind])
+        ind <- getsamples(Z[[ll]],X,levelvec=attr(Z,"levelvec"))
+        if(length(ind) >1) I[ind,ll ] <- attr(Z[[ll]],"predict") <- mean(Y[ind]) else I[ind,ll ] <- mean(Y)
       }
     }
   }else{
     for (ll in 1:length(Z)){
-      ind <- getsamples(Z[[ll]],X)
-       I[ind,ll] <- if(mode=="predict") attr(Z[[ll]],"predict") else attr(Z[[ll]],"mean")
+      ind <- getsamples(Z[[ll]],X,levelvec=attr(Z,"levelvec"))
+      if(length(ind)>1){
+        I[ind,ll] <- if(mode=="predict") attr(Z[[ll]],"predict") else attr(Z[[ll]],"mean")
+      }
     }
   }
   return(list(I=I,Z=Z))

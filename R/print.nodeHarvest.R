@@ -1,5 +1,5 @@
 print.nodeHarvest <-
-function(x,nonodes=4,...){
+function(x,nonodes=3,...){
 
 
   Z <- x[["nodes"]]

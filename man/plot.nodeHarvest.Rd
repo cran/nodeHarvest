@@ -6,13 +6,12 @@ plot method for Node Harvest objects
 }
 \description{
 Node Harvest visualization. Each node with a non-zero weight is plotted (weights is proportional to area of node).
-The average response in each node is shown on the horizontal axis and the sample size in each node on the vertical axis.
+The average response in each node is shown on the horizontal axis.  The number of observations in each node is shown on the vertical axis.
 }
 \usage{
 \method{plot}{nodeHarvest}(x,  XTEST = NULL, 
 	 highlight = NULL, 
          varnames = NULL, 
-         threshold = 0.005, 
 	 yoffset = 0.12, 
 	 labels = "all", 
          cexfaclab = 1,  ...)
@@ -29,9 +28,6 @@ The nodes of this observation in \code{X} are highlighted and possibly annotated
 }
   \item{varnames}{
 The variable names can be changed here.
-}
-  \item{threshold}{
-Nodes with weight below this value are not plotted.
 }
   \item{yoffset}{
 The vertical offset in the annotation of interaction nodes.
