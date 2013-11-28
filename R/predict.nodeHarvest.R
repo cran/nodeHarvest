@@ -4,14 +4,16 @@ function(object, newdata=NULL, explain=NULL, maxshow=5, weight=sapply(object[["n
     predtest <-  object$predicted 
   }else{
 
-    if(is.data.frame(newdata)){
+      if(is.null(nrow(newdata)))  newdata <- as.data.frame(matrix(unlist(newdata),nrow=1))
+
+      if(is.data.frame(newdata)){
       for (k in 1:ncol(newdata)){
         if(!class(newdata[,k])%in%c("numeric","factor")){
           newdata[,k] <- as.numeric(newdata[,k])
         }
       }
     }
-
+        
     Z <- object[["nodes"]]
     
     weight <- sapply(Z,attr,"weight")

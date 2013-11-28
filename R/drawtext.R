@@ -5,7 +5,7 @@ function(Z,k,varnames= as.character(1:100) ,offset=0.1,yoffset=0.1,cex=0.75,alln
   largersmaller <- Z[[k]]
   allmean <- sapply(Z,attr,"mean")
   if(is.null(alln)) alln <- sapply(Z,attr,"n")
-  alln <-  rank(sapply(Z,attr,"n") + seq(0.1,0,length=length(Z)) ,ties="first" )
+  alln <-  rank(sapply(Z,attr,"n") + seq(0.1,0,length=length(Z)) ,ties.method="first" )
 
   
   offy <-  yoffset * (1:nrow(largersmaller))

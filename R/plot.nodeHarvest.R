@@ -29,7 +29,7 @@ function(x,  XTEST=NULL, highlight=NULL, varnames= NULL, yoffset=0.12, labels="a
     
 
   allmean <- sapply(Z,attr,"mean")
-  alln <-  rank(sapply(Z,attr,"n") + seq(0.1,0,length=length(weight)) ,ties="first" )
+  alln <-  rank(sapply(Z,attr,"n") + seq(0.1,0,length=length(weight)) ,ties.method="first" )
   rang <- range(allmean)
   ylim <- c( min(alln)*0.9 , max(alln)*1.1 ) 
   xtmp <- allmean 

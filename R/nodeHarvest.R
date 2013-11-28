@@ -1,6 +1,6 @@
 nodeHarvest <-
 function(X,Y, nodesize=10, nodes=1000, maxinter=2, mode="mean", lambda=Inf, addto=NULL,  onlyinter=NULL, silent=FALSE,biascorr=FALSE){
-
+   
   levelvec <- list()
   for (k in 1:ncol(X)){
     if(!class(X[,k])%in%c("numeric","factor")){
