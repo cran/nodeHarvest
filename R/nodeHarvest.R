@@ -51,16 +51,20 @@ function(X,Y, nodesize=10, nodes=1000, maxinter=2, mode="mean", lambda=Inf, addt
   }
   for (k in 1:length(Z)) attr(Z[[k]],"weight") <- w[k]
 
-  Isign <- abs(sign(I))
-  connection <- t(Isign)%*%Isign
-  connection <- diag(1/diag(connection)) %*% connection
-  diag(connection) <- 0
-  connection[lower.tri(connection)] <- 0
-  for (k in 1:nrow(connection)){
-    propcontained <- connection[k,]
-    maxval <- max(propcontained)
-    choose <- which( propcontained>=0.99999 )
-    attr(Z[[k]],"ancestors") <- choose
+  if(ncol(I)>1){
+    Isign <- abs(sign(I))
+    connection <- t(Isign)%*%Isign
+    connection <- diag(1/diag(connection)) %*% connection
+    diag(connection) <- 0
+    connection[lower.tri(connection)] <- 0
+    for (k in 1:nrow(connection)){
+      propcontained <- connection[k,]
+      maxval <- max(propcontained)
+      choose <- which( propcontained>=0.99999 )
+      attr(Z[[k]],"ancestors") <- choose
+    }
+  }else{
+    attr(Z[[1]],"ancestors") <- integer(0)
   }
   predicted <- as.numeric(I %*% w)
   
