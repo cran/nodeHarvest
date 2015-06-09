@@ -42,3 +42,30 @@ function(I,Y, Isign= -1*(abs(I)>10^(-5)) ,wleafs=NULL, rho = 10^(-5), epsilon=In
   
 }
 
+
+getw2 <-
+function(I,Y, Isign= -1*(abs(I)>10^(-5)) ,wleafs=NULL, rho = 10^(-5), epsilon=Inf, silent=FALSE ){
+
+  Dmat <- t(I) %*% I
+  Ismat <- t(Isign)%*%Isign
+
+  pI <- ncol(I)
+  nI <- nrow(I)
+  
+   
+  c <- - as.numeric( t( Y - I%*%wleafs ) %*% I ) 
+   
+
+  delta <- solve.QP( Dmat + max(abs(I)) *20 * Ismat + diag(pI), -c,  t( rbind( rep(1,pI), rep(-1,pI), diag(pI))), c(-0.001,-0.001,-wleafs))$solution
+    
+    
+  w <-  wleafs +  delta
+
+    
+  if(!silent) cat("\n number of selected nodes                               :",sum(w>0.01),"\n")
+
+  
+  return(w)
+  
+}
+

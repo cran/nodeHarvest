@@ -33,13 +33,19 @@ function(X,Y, nodesize=10, nodes=1000, maxinter=2, mode="mean", lambda=Inf, addt
   geti <- getI(Z, if(hasnas) XIMP else X ,Y,mode=mode)
   I <- geti$I
   Z <- geti$Z
+  if( any(abs(sapply(Z,function(x) attr(x,"mean")))<10^(-4))){
+    geti <- getI(Z, if(hasnas) XIMP else X ,Y=NULL,mode=mode)
+    Is <- geti$I
+  }else{
+    Is <- abs(sign(I))
+  }
   
   wleafs <- rep(0,length(Z))
   indroot <- which(sapply(Z,attr,"depth")==0)[1]
   wleafs[indroot] <- 1
   
   if(!silent) cat(" ... computing node weights ...")
-  w <- getw(I,Y,Isign=abs(sign(I)),wleafs=wleafs, epsilon=lambda-1,silent=silent)
+  w <- getw(I,Y,Isign=Is,wleafs=wleafs, epsilon=lambda-1,silent=silent)
     
   rem <- which(abs(w) < 0.01*max(abs(w)))
   if(length(rem)>0){

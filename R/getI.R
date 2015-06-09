@@ -24,7 +24,7 @@ function(Z,X,Y=NULL,mode="mean"){
     for (ll in 1:length(Z)){
       ind <- getsamples(Z[[ll]],X,levelvec=attr(Z,"levelvec"))
       if(length(ind)>=1){
-        I[ind,ll] <- if(mode=="predict") attr(Z[[ll]],"predict") else attr(Z[[ll]],"mean")
+        I[ind,ll] <- 1
       }
     }
   }
