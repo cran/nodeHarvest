@@ -14,7 +14,7 @@ function(X,Y, nodesize=10, nodes=1000, maxinter=2, mode="mean", lambda=Inf, addt
     }
   }
   
-
+  
 
   hasnas <- any(is.na(X))
   imputed <- FALSE
@@ -34,10 +34,10 @@ function(X,Y, nodesize=10, nodes=1000, maxinter=2, mode="mean", lambda=Inf, addt
   I <- geti$I
   Z <- geti$Z
   if( any(abs(sapply(Z,function(x) attr(x,"mean")))<10^(-4))){
-    geti <- getI(Z, if(hasnas) XIMP else X ,Y=NULL,mode=mode)
-    Is <- geti$I
+    geti <- getI(Z, if(hasnas) XIMP else X ,Y=NULL,mode="member")
+    Isign <- geti$I
   }else{
-    Is <- abs(sign(I))
+    Isign <- abs(sign(I))
   }
   
   wleafs <- rep(0,length(Z))
@@ -45,7 +45,7 @@ function(X,Y, nodesize=10, nodes=1000, maxinter=2, mode="mean", lambda=Inf, addt
   wleafs[indroot] <- 1
   
   if(!silent) cat(" ... computing node weights ...")
-  w <- getw(I,Y,Isign=Is,wleafs=wleafs, epsilon=lambda-1,silent=silent)
+  w <- getw(I,Y,Isign=Isign,wleafs=wleafs, epsilon=lambda-1,silent=silent)
     
   rem <- which(abs(w) < 0.01*max(abs(w)))
   if(length(rem)>0){
@@ -54,11 +54,11 @@ function(X,Y, nodesize=10, nodes=1000, maxinter=2, mode="mean", lambda=Inf, addt
     attributes(Z) <- attri
     w <- w[-rem]
     I <- I[,-rem,drop=FALSE]
+    Isign <- Isign[,-rem,drop=FALSE]
   }
   for (k in 1:length(Z)) attr(Z[[k]],"weight") <- w[k]
 
   if(ncol(I)>1){
-    Isign <- abs(sign(I))
     connection <- t(Isign)%*%Isign
     connection <- diag(1/diag(connection)) %*% connection
     diag(connection) <- 0

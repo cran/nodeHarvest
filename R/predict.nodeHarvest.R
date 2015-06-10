@@ -16,9 +16,10 @@ function(object, newdata=NULL, explain=NULL, maxshow=5, weight=sapply(object[["n
         
     Z <- object[["nodes"]]
     
-    weight <- sapply(Z,attr,"weight")
-    ITEST <- getI(Z, newdata,Y=NULL, mode="mean")$I
-    predtest <- as.numeric( ITEST %*% weight ) / as.numeric( abs(sign(ITEST)) %*% weight)
+      weight <- sapply(Z,attr,"weight")
+      ITEST <- getI(Z, newdata,Y=NULL, mode="mean")$I
+      ISIGN <- getI(Z, newdata,Y=NULL, mode="member")$I
+    predtest <- as.numeric( ITEST %*% weight ) / as.numeric( ISIGN %*% weight)
 
     if(!is.null(object[["bias"]])){
       predtest <- object[["bias"]][1]+object[["bias"]][2]*predtest
